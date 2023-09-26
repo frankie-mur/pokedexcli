@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"os"
 	"strings"
+
+	"github.com/frankie-mur/pokedexcli/internal/models"
 )
 
 type cliCommand struct {
@@ -24,11 +26,24 @@ func GetCommands() map[string]cliCommand {
 			description: "Exit the Pokedex",
 			callback:    commandExit,
 		},
+		"map": {
+			name:        "map",
+			description: "Display 20 locations of pokemon locations",
+			callback:    commandMap,
+		},
 	}
 }
 
 func commandHelp() error {
-	fmt.Println("Help page")
+	fmt.Println()
+	fmt.Println("Welcome to the Pokedex")
+	fmt.Println("Usage:")
+	fmt.Println()
+	for _, cmd := range GetCommands() {
+		msg := fmt.Sprintf("%s : %s", cmd.name, cmd.description)
+		fmt.Println(msg)
+	}
+	fmt.Println()
 	return nil
 }
 
@@ -41,4 +56,18 @@ func cleanInput(text string) []string {
 	output := strings.ToLower(text)
 	words := strings.Fields(output)
 	return words
+}
+
+func commandMap() error {
+	data, err := models.GetTop20()
+	if err != nil {
+		fmt.Printf("An error occurred, %s\n", err.Error())
+	}
+
+	//Print top 20 names
+	for _, res := range data.Results {
+		fmt.Println(res.Name)
+	}
+
+	return nil
 }
