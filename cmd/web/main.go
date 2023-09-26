@@ -6,12 +6,19 @@ import (
 	"os"
 )
 
+var url = "https://pokeapi.co/api/v2/location"
+
 func main() {
 	//Initialize our scannr
 	s := bufio.NewScanner(os.Stdin)
 
 	prompt := "pokedex > "
 	commands := GetCommands()
+
+	config := &Config{
+		next: &url,
+		prev: nil,
+	}
 
 	for {
 		fmt.Print(prompt)
@@ -27,7 +34,7 @@ func main() {
 		//Check if command exists, if so execute the callback
 		c, ok := commands[command]
 		if ok {
-			err := c.callback()
+			err := c.callback(config)
 			if err != nil {
 				fmt.Println(err)
 			}

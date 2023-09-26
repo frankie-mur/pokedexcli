@@ -3,15 +3,20 @@ package main
 import (
 	"fmt"
 	"os"
-	"strings"
 
 	"github.com/frankie-mur/pokedexcli/internal/models"
 )
 
+// Hold the next and previous urls for pokedex api requests
+type Config struct {
+	next *string
+	prev *string
+}
+
 type cliCommand struct {
 	name        string
 	description string
-	callback    func() error
+	callback    func(*Config) error
 }
 
 func GetCommands() map[string]cliCommand {
@@ -31,10 +36,15 @@ func GetCommands() map[string]cliCommand {
 			description: "Display 20 locations of pokemon locations",
 			callback:    commandMap,
 		},
+		"mapb": {
+			name:        "mapb",
+			description: "Display the previous 20 pokemon locations",
+			callback:    commandMapb,
+		},
 	}
 }
 
-func commandHelp() error {
+func commandHelp(c *Config) error {
 	fmt.Println()
 	fmt.Println("Welcome to the Pokedex")
 	fmt.Println("Usage:")
@@ -47,27 +57,39 @@ func commandHelp() error {
 	return nil
 }
 
-func commandExit() error {
+func commandExit(c *Config) error {
 	os.Exit(0)
 	return nil
 }
 
-func cleanInput(text string) []string {
-	output := strings.ToLower(text)
-	words := strings.Fields(output)
-	return words
-}
-
-func commandMap() error {
-	data, err := models.GetTop20()
+func commandMap(c *Config) error {
+	data, err := models.GetTop20(c.next)
 	if err != nil {
-		fmt.Printf("An error occurred, %s\n", err.Error())
+		return err
 	}
 
 	//Print top 20 names
 	for _, res := range data.Results {
 		fmt.Println(res.Name)
 	}
+
+	setConfig(c, data)
+
+	return nil
+}
+
+func commandMapb(c *Config) error {
+	data, err := models.GetTop20(c.prev)
+	if err != nil {
+		return err
+	}
+
+	//Print top 20 names
+	for _, res := range data.Results {
+		fmt.Println(res.Name)
+	}
+
+	setConfig(c, data)
 
 	return nil
 }

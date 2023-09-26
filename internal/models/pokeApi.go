@@ -5,9 +5,9 @@ import (
 	"io"
 	"log"
 	"net/http"
-)
 
-const url = "https://pokeapi.co/api/v2/location"
+	"github.com/pkg/errors"
+)
 
 type PokeDexLocation struct {
 	Count    int     `json:"count"`
@@ -19,8 +19,11 @@ type PokeDexLocation struct {
 	} `json:"results"`
 }
 
-func GetTop20() (*PokeDexLocation, error) {
-	resp, err := http.Get(url)
+func GetTop20(url *string) (*PokeDexLocation, error) {
+	if url == nil {
+		return nil, errors.New("No more results")
+	}
+	resp, err := http.Get(*url)
 	if err != nil {
 		return nil, err
 	}
@@ -37,6 +40,8 @@ func GetTop20() (*PokeDexLocation, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	//set the next and prev urls to config struct
 
 	return &data, nil
 }
