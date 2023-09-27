@@ -4,6 +4,9 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"time"
+
+	"github.com/frankie-mur/pokedexcli/internal/models"
 )
 
 var url = "https://pokeapi.co/api/v2/location"
@@ -16,8 +19,9 @@ func main() {
 	commands := GetCommands()
 
 	config := &Config{
-		next: &url,
-		prev: nil,
+		next:  &url,
+		prev:  nil,
+		cache: models.NewCache(10 * time.Second),
 	}
 
 	for {

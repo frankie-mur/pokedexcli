@@ -9,8 +9,9 @@ import (
 
 // Hold the next and previous urls for pokedex api requests
 type Config struct {
-	next *string
-	prev *string
+	next  *string
+	prev  *string
+	cache *models.Cache
 }
 
 type cliCommand struct {
@@ -63,6 +64,11 @@ func commandExit(c *Config) error {
 }
 
 func commandMap(c *Config) error {
+	//Check cache
+	//val, exists := c.cache.Get(*c.next)
+	//if exists {
+
+	//	}
 	data, err := models.GetTop20(c.next)
 	if err != nil {
 		return err
