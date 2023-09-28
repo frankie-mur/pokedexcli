@@ -7,13 +7,6 @@ import (
 	"github.com/frankie-mur/pokedexcli/internal/models"
 )
 
-// Hold the next and previous urls for pokedex api requests
-type Config struct {
-	next  *string
-	prev  *string
-	cache *models.Cache
-}
-
 type cliCommand struct {
 	name        string
 	description string
@@ -42,6 +35,11 @@ func GetCommands() map[string]cliCommand {
 			description: "Display the previous 20 pokemon locations",
 			callback:    commandMapb,
 		},
+		"explore": {
+			name:        "explore",
+			description: "Display the name of pokemon in a specific location",
+			callback:    commandExplore,
+		},
 	}
 }
 
@@ -64,12 +62,7 @@ func commandExit(c *Config) error {
 }
 
 func commandMap(c *Config) error {
-	//Check cache
-	//val, exists := c.cache.Get(*c.next)
-	//if exists {
-
-	//	}
-	data, err := models.GetTop20(c.next)
+	data, err := models.GetTop20(c.cache, c.next)
 	if err != nil {
 		return err
 	}
@@ -85,7 +78,7 @@ func commandMap(c *Config) error {
 }
 
 func commandMapb(c *Config) error {
-	data, err := models.GetTop20(c.prev)
+	data, err := models.GetTop20(c.cache, c.prev)
 	if err != nil {
 		return err
 	}
@@ -97,5 +90,21 @@ func commandMapb(c *Config) error {
 
 	setConfig(c, data)
 
+	return nil
+}
+
+// TODO: Add name as a parameter and search by name instead of hard code
+func commandExplore(c *Config) error {
+	fmt.Println("Exploring city....")
+	data, err := models.GetNamesFromArea(c.cache, "pastoria-city-area")
+	if err != nil {
+		return err
+	}
+	fmt.Printf("Found Pokemon:\n")
+	for _, res := range data.PokemonEncounters {
+		fmt.Printf(" - %s\n", res.Pokemon.Name)
+	}
+
+	//fmt.Println(data)
 	return nil
 }

@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"sync"
 	"time"
 )
@@ -22,7 +23,9 @@ func NewCache(interval time.Duration) *Cache {
 }
 
 func (c *Cache) Add(key string, val []byte) {
+	fmt.Println("adding")
 	c.mutex.Lock()
+	fmt.Printf("Adding to cache: %s\n", key)
 	c.entry[key] = &cacheEntry{
 		val:       val,
 		createdAt: time.Now(),
@@ -31,11 +34,15 @@ func (c *Cache) Add(key string, val []byte) {
 }
 
 func (c *Cache) Get(key string) ([]byte, bool) {
+	fmt.Printf("Getting cache key %s\n", key)
 	c.mutex.Lock()
 	obj, ok := c.entry[key]
 	if !ok {
+		fmt.Println("Did not find entry")
+		c.mutex.Unlock()
 		return []byte{}, false
 	}
+	fmt.Printf("Found entry\n")
 	c.mutex.Unlock()
 	return obj.val, true
 }

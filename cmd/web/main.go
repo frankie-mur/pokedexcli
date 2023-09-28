@@ -9,10 +9,17 @@ import (
 	"github.com/frankie-mur/pokedexcli/internal/models"
 )
 
+// Hold the next and previous urls for pokedex api requests
+type Config struct {
+	next  *string
+	prev  *string
+	cache *models.Cache
+}
+
 var url = "https://pokeapi.co/api/v2/location"
 
 func main() {
-	//Initialize our scannr
+	//Initialize our scanner
 	s := bufio.NewScanner(os.Stdin)
 
 	prompt := "pokedex > "
