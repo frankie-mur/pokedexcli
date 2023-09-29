@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"os"
 
@@ -39,6 +40,11 @@ func GetCommands() map[string]cliCommand {
 			name:        "explore",
 			description: "Display the name of pokemon in a specific location",
 			callback:    commandExplore,
+		},
+		"catch": {
+			name:        "catch",
+			description: "Used to catch a specific pokemon",
+			callback:    commandCatch,
 		},
 	}
 }
@@ -93,7 +99,6 @@ func commandMapb(c *Config, val string) error {
 	return nil
 }
 
-// TODO: Add name as a parameter and search by name instead of hard code
 func commandExplore(c *Config, val string) error {
 	fmt.Println("Exploring city....")
 	data, err := models.GetNamesFromArea(c.cache, val)
@@ -106,5 +111,28 @@ func commandExplore(c *Config, val string) error {
 	}
 
 	//fmt.Println(data)
+	return nil
+}
+
+func commandCatch(c *Config, val string) error {
+	//Check pokedex for pokemon
+	_, ok := c.pokedex[val]
+	if ok {
+		return errors.New(val + " is already caught!")
+	}
+	data, err := models.CatchPokemon(val)
+	if err != nil {
+		return err
+	}
+	fmt.Printf("Throwing a Pokemon at %s...\n", val)
+	didCatch := tryCatch(data.BaseExperience)
+	if !didCatch {
+		return errors.New("missed the Pokemon! maybe try again")
+	}
+
+	//Store the pokemon in users pokedex
+	c.pokedex[val] = data
+	fmt.Printf("Caught %s and stored in pokedex!\n", val)
+
 	return nil
 }

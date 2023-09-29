@@ -11,9 +11,10 @@ import (
 
 // Hold the next and previous urls for pokedex api requests
 type Config struct {
-	next  *string
-	prev  *string
-	cache *models.Cache
+	next    *string
+	prev    *string
+	cache   *models.Cache
+	pokedex map[string]*models.Pokemon
 }
 
 var url = "https://pokeapi.co/api/v2/location"
@@ -26,9 +27,10 @@ func main() {
 	commands := GetCommands()
 
 	config := &Config{
-		next:  &url,
-		prev:  nil,
-		cache: models.NewCache(10 * time.Second),
+		next:    &url,
+		prev:    nil,
+		cache:   models.NewCache(10 * time.Second),
+		pokedex: map[string]*models.Pokemon{},
 	}
 
 	for {
