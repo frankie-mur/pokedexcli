@@ -10,7 +10,7 @@ import (
 type cliCommand struct {
 	name        string
 	description string
-	callback    func(*Config) error
+	callback    func(*Config, string) error
 }
 
 func GetCommands() map[string]cliCommand {
@@ -43,7 +43,7 @@ func GetCommands() map[string]cliCommand {
 	}
 }
 
-func commandHelp(c *Config) error {
+func commandHelp(c *Config, val string) error {
 	fmt.Println()
 	fmt.Println("Welcome to the Pokedex")
 	fmt.Println("Usage:")
@@ -56,12 +56,12 @@ func commandHelp(c *Config) error {
 	return nil
 }
 
-func commandExit(c *Config) error {
+func commandExit(c *Config, val string) error {
 	os.Exit(0)
 	return nil
 }
 
-func commandMap(c *Config) error {
+func commandMap(c *Config, val string) error {
 	data, err := models.GetTop20(c.cache, c.next)
 	if err != nil {
 		return err
@@ -77,7 +77,7 @@ func commandMap(c *Config) error {
 	return nil
 }
 
-func commandMapb(c *Config) error {
+func commandMapb(c *Config, val string) error {
 	data, err := models.GetTop20(c.cache, c.prev)
 	if err != nil {
 		return err
@@ -94,9 +94,9 @@ func commandMapb(c *Config) error {
 }
 
 // TODO: Add name as a parameter and search by name instead of hard code
-func commandExplore(c *Config) error {
+func commandExplore(c *Config, val string) error {
 	fmt.Println("Exploring city....")
-	data, err := models.GetNamesFromArea(c.cache, "pastoria-city-area")
+	data, err := models.GetNamesFromArea(c.cache, val)
 	if err != nil {
 		return err
 	}

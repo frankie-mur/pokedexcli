@@ -37,7 +37,14 @@ func main() {
 		s.Scan()
 		//Get the text from scanner
 		text := s.Text()
-		command := cleanInput(text)[0]
+		input := cleanInput(text)
+
+		command := input[0]
+		var value string
+		if len(input) > 1 {
+			value = input[1]
+		}
+
 		//If the text is empty
 		if len(command) == 0 {
 			continue
@@ -45,7 +52,7 @@ func main() {
 		//Check if command exists, if so execute the callback
 		c, ok := commands[command]
 		if ok {
-			err := c.callback(config)
+			err := c.callback(config, value)
 			if err != nil {
 				fmt.Println(err)
 			}
