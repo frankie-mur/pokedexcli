@@ -46,6 +46,16 @@ func GetCommands() map[string]cliCommand {
 			description: "Used to catch a specific pokemon",
 			callback:    commandCatch,
 		},
+		"inspect": {
+			name:        "inspect",
+			description: "Used to inspect a specific pokemon (if in pokedex)",
+			callback:    commandInspect,
+		},
+		"pokedex": {
+			name:        "pokedex",
+			description: "Lists all of the pokemon in pokedex",
+			callback:    commandPokedex,
+		},
 	}
 }
 
@@ -133,6 +143,43 @@ func commandCatch(c *Config, val string) error {
 	//Store the pokemon in users pokedex
 	c.pokedex[val] = data
 	fmt.Printf("Caught %s and stored in pokedex!\n", val)
+
+	return nil
+}
+
+func commandInspect(c *Config, val string) error {
+	if val == "" {
+		return errors.New("enter a valid pokemon")
+	}
+
+	//Check the pokedex
+	pokemon, ok := c.pokedex[val]
+	if !ok {
+		return errors.New("pokemon is not in pokedex")
+	}
+
+	//Print the pokemon's stats
+	fmt.Printf("Name: %s\n", pokemon.Name)
+	fmt.Printf("Height: %d\n", pokemon.Height)
+	fmt.Printf("Weight: %d\n", pokemon.Weight)
+	fmt.Println("Stats:")
+	for _, c := range pokemon.Stats {
+		fmt.Printf("  -%s: %d\n", c.Stat.Name, c.BaseStat)
+	}
+	fmt.Println("Types:")
+	for _, c := range pokemon.Types {
+		fmt.Printf(" - %s\n", c.Type.Name)
+	}
+
+	return nil
+}
+
+func commandPokedex(c *Config, val string) error {
+	fmt.Println("Your Pokedex:")
+
+	for k := range c.pokedex {
+		fmt.Printf(" - %s\n", k)
+	}
 
 	return nil
 }
